@@ -1,0 +1,117 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<body style='background:#a0ccdb'>
+    <div class="container">
+        <div class="jumbotron" style="display:flex">
+            <h1> Youtube Sentiment Analysis </h1>
+        </div>
+
+        <div class="jumbotron">
+            <p> Analyse comments and calculate sentiment for a Youtube video.<p>
+
+                    <p>Navigate <a href='/docs'>here</a> for API docs.</p>
+        </div>
+
+        <div class="jumbotron">
+
+            <p>
+                To get started enter Video ID of a Youtube video.
+            </p>
+            <table>
+                <tr>
+                    <td>
+                        <div class="card" style="width: 40rem;">
+                            <div class="card-body">
+                                Using my Model (Positive and Negative)<br><br>
+                                <input class="btn btn-light" type="text" id="mymodel" name="mymodel"
+                                    placeholder="Video ID">
+                                <button class="btn btn-success" onclick="calculate_mymodel()"> Analyse </button>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="card" style="width: 40rem;">
+                            <div class="card-body">
+                                Using TextBlob (Positive, Negative and Neutral)<br><br>
+                                <input class="btn btn-light" type="text" id="textblob" name="textblob"
+                                    placeholder="Video ID">
+                                <button class="btn btn-success" onclick="calculate_textblob()"> Analyse </button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style='width:70%;'>
+                            <p id='res'></p>
+                            <p id='pos'></p>
+                            <p id='neg'></p>
+                            <p id='neu'></p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+</body>
+
+<script>
+    function calculate_mymodel() {
+        alert('Analysing')
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", '/mymodel', true);
+        xhr.responseType = 'json'
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onload = function () {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                console.log(this.response)
+                var p = this.response['pos']
+                var n = this.response['neg']
+                document.getElementById("res").innerHTML = "Sentiment for this video:"
+                document.getElementById("pos").innerHTML = "Positive :" + p
+                document.getElementById("neg").innerHTML = "Negative :" + n
+                document.getElementById("neu").innerHTML = ""
+            }
+            if (this.status === 404) {
+                alert('Incorrect Video ID')
+            }
+
+        }
+        xhr.onabort = function () {
+            alert('Incorrect Video ID')
+        }
+        xhr.send(JSON.stringify({
+            'id': document.getElementById("mymodel").value
+        }));
+    }
+
+    function calculate_textblob() {
+        alert('Analysing')
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", '/textblob', true);
+        xhr.responseType = 'json'
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onload = function () {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                console.log(this.response)
+                var p = this.response['pos']
+                var n = this.response['neg']
+                var nu = this.response['neutral']
+
+                document.getElementById("res").innerHTML = "Sentiment for this video:"
+                document.getElementById("pos").innerHTML = "Positive :" + p
+                document.getElementById("neg").innerHTML = "Negative :" + n
+                document.getElementById("neu").innerHTML = "Neutral :" + nu
+            }
+            if (this.status === 404) {
+                alert('Incorrect Video ID')
+            }
+        }
+        xhr.onabort = function () {
+            alert('Incorrect Video ID')
+        }
+        xhr.send(JSON.stringify({
+            'id': document.getElementById("textblob").value
+        }));
+    }
+</script>
