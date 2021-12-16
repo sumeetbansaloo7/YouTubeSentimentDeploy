@@ -1,7 +1,6 @@
 python-decouple
 fastapi
 uvicorn
-pickle
 pydantic
 google-api-python-client
 pandas
